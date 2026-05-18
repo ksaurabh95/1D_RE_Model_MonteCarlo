@@ -89,33 +89,19 @@ Computes the time derivative of pressure head.
 - Forms ODE system for solver
 
 ### Governing Equation
-
-The model solves:
-
-$$
-\frac{\partial \theta}{\partial t}
-=
--\frac{\partial q}{\partial z}
--S
-$$
-
+The Richards Equation is given by $\frac{\partial \theta}{\partial t} = -\frac{\partial q}{\partial z} - S$. 
 where:
 
-- \(\theta\) = volumetric water content
-- \(q\) = Darcy flux
-- \(S\) = root water uptake term
+- $\theta$ = volumetric water content
+- $q$ = Darcy flux
+- $S$ = root water uptake term
 
 Darcy flux:
-
-\[
-q = -K(h)\left(\frac{\partial H}{\partial z}\right)
-\]
+$q = -K(h)\left(\frac{\partial H}{\partial z}\right)$
 
 where:
 
-\[
-H = h-z
-\]
+$H = h-z$
 
 ---
 
@@ -160,28 +146,19 @@ Computes:
 
 ### van Genuchten Equation
 
-\[
-S_e = \left(1 + |\alpha h|^n\right)^{-m}
-\]
+$S_e = \left(1 + |\alpha h|^n\right)^{-m}$
 
 where:
 
-\[
-m = 1 - \frac{1}{n}
-\]
+$m = 1 - \frac{1}{n}$
 
 Water content:
 
-\[
-\theta = (\theta_s - \theta_r)S_e + \theta_r
-\]
+$\theta = (\theta_s - \theta_r)S_e + \theta_r$
 
 Hydraulic conductivity:
 
-\[
-K = K_s S_e^{\eta}
-\left[1-(1-S_e^{1/m})^m\right]^2
-\]
+$K = K_s S_e^{\eta}\left[1-(1-S_e^{1/m})^m\right]^2$
 
 ---
 
@@ -207,16 +184,13 @@ Plant stress response function.
 Computes actual root water uptake.
 
 ### Feddes Uptake Equation
-
-\
-S(z,h)=f_1(z)f_2(h)E_p
-\
+$S(z,h)=f_1(z)f_2(h)E_p$
 
 where:
 
-- \(f_1\) = root distribution function
-- \(f_2\) = water stress function
-- \(E_p\) = potential evapotranspiration
+- $f_1 = root distribution function
+- $f_2$ = water stress function
+- $E_p$ = potential evapotranspiration
 
 ---
 
@@ -233,12 +207,6 @@ Interpolates outputs at requested depths.
 
 #### plot_variable_at_depths()
 Plots variables versus time.
-
-#### compute_mc_stats()
-Computes Monte Carlo statistics.
-
-#### plot_variable_at_depthsMonteCarlo()
-Plots ensemble mean and uncertainty.
 
 ---
 
