@@ -92,12 +92,12 @@ Computes the time derivative of pressure head.
 
 The model solves:
 
-\[
+$$
 \frac{\partial \theta}{\partial t}
 =
 -\frac{\partial q}{\partial z}
 -S
-\]
+$$
 
 where:
 
