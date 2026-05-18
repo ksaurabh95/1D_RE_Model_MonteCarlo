@@ -5,3 +5,8 @@ Saurabh Kumar
 This repository contains a one-dimensional Richards Equation (RE) based numerical model for simulating transient unsaturated water flow in grassland soils. The depository contains two different implementation of code
 
 
+![Model](Model.png)
+
+
+
+
