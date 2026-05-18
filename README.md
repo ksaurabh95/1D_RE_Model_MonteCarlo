@@ -2,6 +2,10 @@
 A Python-Based Numerical Implementation of the 1D Richards Equation (RE) with Root Water Uptake
 ### Author
 Saurabh Kumar
+PostDoctoral Research Fellow,
+School of Mathematics and Statistics,
+Univeristy Institute Dublin,  
+
 ### Project Description: 
 This repository contains a one-dimensional Richards Equation (RE) based numerical model for simulating transient unsaturated water flow in grassland soils.
 * Basic Theory and code analysis is documented in pdf document
