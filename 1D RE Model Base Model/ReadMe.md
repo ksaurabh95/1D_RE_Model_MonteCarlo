@@ -89,7 +89,9 @@ Computes the time derivative of pressure head.
 - Forms ODE system for solver
 
 ### Governing Equation
-The Richards Equation is given by $\frac{\partial \theta}{\partial t} = -\frac{\partial q}{\partial z} - S$. 
+The Richards Equation is given by: 
+
+###  $\frac{\partial \theta (h)}{\partial t} = \left[K(h) \left( \frac{\partial h}{\partial z} - 1 \right) \right]   -\lambda $. 
 where:
 
 - $\theta$ = volumetric water content
@@ -174,23 +176,18 @@ Implements Feddes root water uptake model.
 
 ### Functions
 
-#### f1()
-Root distribution function.
+#### $f_1(z)$ : Root distribution function.
 
-#### f2()
-Plant stress response function.
+#### $f_2(h)$ : Plant stress response function.
 
-#### RootUptakeModel()
-Computes actual root water uptake.
-
-### Feddes Uptake Equation
-$S(z,h)=f_1(z)f_2(h)E_p$
+#### RootUptakeModel(): Computes actual root water uptake using Feddes Uptake Equation
+####  $\lambda =f_1(z)f_2(h)ET_0$
 
 where:
 
-- $f_1 = root distribution function
+- $f_1$ = root distribution function
 - $f_2$ = water stress function
-- $E_p$ = potential evapotranspiration
+- $ET_0$ = potential evapotranspiration
 
 ---
 
@@ -346,12 +343,12 @@ The meteorological input file must contain:
 
 | Parameter | Description |
 |---|---|
-| thetas | Saturated water content |
-| thetar | Residual water content |
-| alpha | VG alpha parameter |
-| N | VG pore-size parameter |
-| Ksat | Saturated hydraulic conductivity |
-| n_eta | Tortuosity/connectivity parameter |
+| $\theta_s$ | Saturated water content |
+| $\theta_r$ | Residual water content |
+| $\alpha$ | VG alpha parameter |
+| $n$ | VG pore-size parameter |
+| $K_{sat}$ | Saturated hydraulic conductivity |
+| $\eta$ | Tortuosity/connectivity parameter |
 
 ---
 
