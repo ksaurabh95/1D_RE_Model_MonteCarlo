@@ -3,7 +3,7 @@
 
 ## Overview
 
-This repository contains a one-dimensional Richards Equation (RE) based numerical framework for simulating transient unsaturated flow in Irish grassland soils. The framework supports both deterministic and Monte Carlo simulations of soil water dynamics using physically-based soil hydraulic functions.
+This repository contains a 1D Richards Equation (RE) based numerical framework for simulating transient unsaturated flow in Irish grassland soils. The framework supports the Monte Carlo simulations of soil water dynamics using physically-based soil hydraulic functions.
 
 The model integrates:
 
