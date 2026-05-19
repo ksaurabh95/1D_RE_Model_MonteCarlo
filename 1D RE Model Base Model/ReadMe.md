@@ -1,7 +1,8 @@
 # 1D Richards Equation (RE) Model 
 
 ### Project Description
-This repository contains a one-dimensional Richards Equation (RE) based numerical model for simulating transient unsaturated water flow in Irish grassland soils. The model integrates:
+This repository contains a 1D Richards Equation (RE) based numerical model for simulating transient unsaturated water flow in Irish grassland soils. 
+The model integrates:
 
 - Soil hydraulic properties using the van Genuchten (VG) formulation
 - Meteorological forcing (rainfall and potential evapotranspiration)
