@@ -23,7 +23,7 @@ The framework is designed primarily for Irish grassland applications but can be 
 ├── PlantUptakeFunction.py
 ├── UtilitiesFunctions.py
 ├── grid_classes.py
-├── data_Clonroche.xlsx
+├── data_johnstown.xlsx
 ├── README.md
 └── outputs/
 ```
@@ -47,15 +47,33 @@ Main execution script for the Richards Equation model.
 
 #### Input Data
 ```python
-MetData = pd.read_excel('data_Clonroche.xlsx',sheet_name='met_data')
-SoilData = pd.read_excel('data_Clonroche.xlsx',sheet_name='vg_parameters_obs')
+MetData = pd.read_excel('data_johnstown.xlsx',sheet_name='met_data')
+SoilData = pd.read_excel('data_johnstown.xlsx',sheet_name='VGParams_Rosetta')
 ```
 
 #### Grid Definition
 ```python
 profileData = ProfileGridSpec(zmin=0, zmax=2, dz=0.02)
 ```
+#### Root water uptake parameters
+```python
+RWUData = RWUSpec(
+    psi_a=-0.05,  # critical pressure heads associated with anaerobiosis,
+    psi_d=-4,   # critical pressure heads associated with soilwater-limited evapotranspiration
+    psi_w=-150,  # # critical pressure head associated with plant wilting
+    Lr= 1   # m # depth of root zone
+    ) 
+```
 
+#### Run time details and time steps
+```python
+timeData = TimeSpec(
+    tmin = 0,
+    tmax = len(MetData),
+    dt = 1 ,  #in day 
+    )
+
+```
 #### Initial Conditions
 ```python
 IniData = InitialCondition(
@@ -141,9 +159,9 @@ Implements van Genuchten hydraulic functions.
 #### VGModel()
 Computes:
 
-- Effective saturation \(S_e\)
+- Effective saturation \($S_e$\)
 - Hydraulic conductivity \(K\)
-- Water content \(\theta\)
+- soil moisture content \($\theta\$)
 - Specific moisture capacity \(C\)
 
 ### van Genuchten Equation
