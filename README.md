@@ -15,6 +15,8 @@ This repository contains a one-dimensional Richards Equation (RE) based numerica
 * 1D RE Model Monte Carlo Framework contains 1D RE model with Monte Carlo framework
 ![Model](Model.png)
 
+### Plot of Model Outputs for 1D RE Model Base Model
+![Johnstown_dataset](Johnstown_dataset.png)
 
-
-
+### Plot of Model Outputs for 1D RE Model Monte Carlo Framework
+![Johnstown_MonteCarlo](Johnstown_MonteCarlo.png)
