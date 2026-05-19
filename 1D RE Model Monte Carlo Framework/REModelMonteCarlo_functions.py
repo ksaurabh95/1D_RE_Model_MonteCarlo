@@ -35,9 +35,12 @@ def generate_mc_vg_params(df_stats, seed=None):
     df["thetar"] = rng.normal(
         df["mean_thetar"], df["std_thetar"]
     )
-
+    
+    df["n_eta"] = rng.normal(
+        df["mean_n_eta"], df["std_n_eta"]
+    )
     # enforce physical bounds
-    df["thetas"] = df["thetas"].clip(0.3, 0.7)
+    df["thetas"] = df["thetas"].clip(0.3, 0.8)
     df["thetar"] = df["thetar"].clip(0.0, df["thetas"] - 0.02)
 
     # ---- Log-space parameters ----
@@ -189,7 +192,7 @@ def RESolverMonteCarloParallel(
         
         for future in as_completed(futures):
             
-            print(f"\rCompleted {completed}/{Nmc} simulations", end="") # print progress 
+            # print(f"\rCompleted {completed}/{Nmc} simulations", end="") # print progress 
             
             completed += 1
             elapsed = time.time() - start_time
