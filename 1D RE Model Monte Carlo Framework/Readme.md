@@ -1,95 +1,29 @@
-# 1D Richards Equation (RE) Model 
 
-### Project Description
-This repository contains a one-dimensional Richards Equation (RE) based numerical model in Monte Carlo framework for simulating transient unsaturated water flow in Irish grassland soils. The model integrates:
+# Richards Equation (RE) Model for Irish Grasslands
 
-- Soil hydraulic properties using the van Genuchten (VG) formulation
-- Meteorological forcing (rainfall and potential evapotranspiration)
-- Root water uptake using the Feddes approach
-- Numerical integration using `scipy.solve_ivp`
-- Post-processing utilities for visualization 
+## Overview
 
-The framework is designed primarily for Irish grassland applications but can be adapted for other locations.
+This repository contains a one-dimensional Richards Equation (RE) based numerical framework for simulating transient unsaturated flow in Irish grassland soils. The framework supports both deterministic and Monte Carlo simulations of soil water dynamics using physically-based soil hydraulic functions.
 
----
+The model integrates:
 
-# Repository Structure
+- Richards Equation (RE) for variably saturated flow
+- van Genuchten (VG) soil hydraulic formulation
+- Feddes root water uptake model
+- Monte Carlo uncertainty propagation
+- Finite difference spatial discretization
+- Implicit time integration using `scipy.solve_ivp`
+- Post-processing and visualization utilities
 
-```text
-.
-├── RE_Model.py
-├── RE_Model_function_files.py
-├── VGModel.py
-├── PlantUptakeFunction.py
-├── UtilitiesFunctions.py
-├── grid_classes.py
-├── data_Clonroche.xlsx
-├── README.md
-└── outputs/
-```
+The framework was developed primarily for Irish grassland applications but can be adapted for other climates, crops, and soil profiles.
 
 ---
 
-# File Descriptions
+# Governing Equation
 
-## 1. RE_Model.py
-Main execution script for the Richards Equation model.
+The Richards Equation solved in the model is:
 
-### Responsibilities
-- Reads meteorological and soil hydraulic data
-- Defines simulation settings
-- Initializes model parameters
-- Runs the RE solver
-- Saves outputs
-- Generates plots
-
-### Main Components
-
-#### Input Data
-```python
-MetData = pd.read_excel('data_Clonroche.xlsx',sheet_name='met_data')
-SoilData = pd.read_excel('data_Clonroche.xlsx',sheet_name='vg_parameters_obs')
-```
-
-#### Grid Definition
-```python
-profileData = ProfileGridSpec(zmin=0, zmax=2, dz=0.02)
-```
-
-#### Initial Conditions
-```python
-IniData = InitialCondition(
-    z_wt=0.3,
-    depth=profileData.depth,
-    RO0=0.0
-)
-```
-
-#### Solver Execution
-```python
-ProcessedOutputs, sol = RESolver(...)
-```
-
----
-
-## 2. RE_Model_function_files.py
-Core numerical implementation of the Richards Equation solver.
-
-### Main Functions
-
-#### RichardsEq()
-Computes the time derivative of pressure head.
-
-### Responsibilities
-- Computes hydraulic properties
-- Calculates Darcy fluxes
-- Applies boundary conditions
-- Computes root water uptake
-- Computes runoff
-- Forms ODE system for solver
-
-### Governing Equation
-The Richards Equation is given by $\frac{\partial \theta}{\partial t} = -\frac{\partial q}{\partial z} - S$. 
+###  $\frac{\partial \theta (h)}{\partial t} = \left[K(h) \left( \frac{\partial h}{\partial z} - 1 \right) \right]   -\lambda $. 
 where:
 
 - $\theta$ = volumetric water content
@@ -102,47 +36,88 @@ $q = -K(h)\left(\frac{\partial H}{\partial z}\right)$
 where:
 
 $H = h-z$
+where:
+
+- $K(h)$ = unsaturated hydraulic conductivity
+- $h$ = pressure head
+- $z$ = vertical depth coordinate
 
 ---
 
-#### RESolver()
-Wrapper around `scipy.integrate.solve_ivp`.
+# Repository Structure
 
-### Responsibilities
-- Assigns soil hydraulic properties
-- Configures numerical solver
-- Runs time integration
-- Calls post-processing routines
+```text
+
+├── RE_Model_function_files.py
+├── REModelMonteCarlo.py
+├── REModelMonteCarlo_functions.py
+├── VGModel.py
+├── PlantUptakeFunction.py
+├── UtilitiesFunctions.py
+├── grid_classes.py
+├── MonteCarloResultAnalysis.py
+├── data_johnstown.xlsx
+├── README.md
+└── outputs/
+```
+---
+
+## Monte Carlo Simulation Framework
+
+The Monte Carlo framework propagates uncertainty in soil hydraulic properties by:
+
+- Randomly sampling VG parameters
+- Running ensemble simulations in parallel
+- Computing uncertainty bounds
+- Saving individual realizations
+
+Main script:
+
+```python
+REModelMonteCarlo.py
+```
+
+Parallel execution is implemented using:
+
+```python
+ProcessPoolExecutor
+```
 
 ---
 
-#### RichardsModelOutputs()
-Post-processing function.
+# File Descriptions
 
-### Outputs
-- Pressure head
-- Soil moisture
-- Effective saturation
-- Hydraulic conductivity
-- Root water uptake
-- Actual evapotranspiration
-- Runoff
-- Storage
+## `grid_classes.py`
+
+Contains dataclasses used throughout the framework.
+
+### Main Dataclasses
+
+| Dataclass | Description |
+|---|---|
+| `ProfileGridSpec` | Soil profile discretization |
+| `RWUSpec` | Root water uptake parameters |
+| `TimeSpec` | Temporal discretization |
+| `InitialCondition` | Initial pressure head configuration |
+| `SolverOptions` | Numerical solver settings |
+| `PostProcerssingOutputs` | Output storage structure |
 
 ---
 
-## 3. VGModel.py
-Implements van Genuchten hydraulic functions.
+## `VGModel.py`
+
+Implements van Genuchten hydraulic relationships.
 
 ### Functions
 
-#### VGModel()
+#### `VGModel()`
+
 Computes:
 
-- Effective saturation \(S_e\)
-- Hydraulic conductivity \(K\)
-- Water content \(\theta\)
-- Specific moisture capacity \(C\)
+- Effective saturation
+- Water content
+- Hydraulic conductivity
+- Moisture capacity
 
 ### van Genuchten Equation
 
@@ -162,128 +137,135 @@ $K = K_s S_e^{\eta}\left[1-(1-S_e^{1/m})^m\right]^2$
 
 ---
 
-#### VGfromSe()
-Computes pressure head and conductivity from effective saturation.
+## `PlantUptakeFunction.py`
 
-Used primarily for ponded boundary conditions.
+Implements the Feddes root water uptake model.
 
----
-
-## 4. PlantUptakeFunction.py
-Implements Feddes root water uptake model.
+### Main Components
 
 ### Functions
 
-#### f1()
-Root distribution function.
+#### $f_1(z)$ : Root distribution function.
 
-#### f2()
-Plant stress response function.
+#### $f_2(h)$ : Plant stress response function.
 
-#### RootUptakeModel()
-Computes actual root water uptake.
-
-### Feddes Uptake Equation
-$S(z,h)=f_1(z)f_2(h)E_p$
-
-where:
-
-- $f_1 = root distribution function
-- $f_2$ = water stress function
-- $E_p$ = potential evapotranspiration
+#### RootUptakeModel(): Computes actual root water uptake using Feddes Uptake Equation
+####  $\lambda =f_1(z)f_2(h)ET_0$
 
 ---
 
-## 5. UtilitiesFunctions.py
-Contains utility and plotting functions.
+## `RE_Model_function_files.py`
 
-### Functions
+Core implementation of the Richards Equation solver.
 
-#### assign_vg()
-Assigns VG parameters to each soil grid cell.
+### Main Functions
 
-#### GetOutputAtRequiredDepths()
-Interpolates outputs at requested depths.
+#### `RichardsEq()`
 
-#### plot_variable_at_depths()
-Plots variables versus time.
+Computes:
 
-#### compute_mc_stats()
-Computes Monte Carlo statistics.
+- Darcy fluxes
+- Hydraulic gradients
+- Root uptake
+- Runoff
+- Pressure head evolution
 
-#### plot_variable_at_depthsMonteCarlo()
-Plots ensemble mean and uncertainty.
+#### `RESolver()`
 
----
+Wrapper around:
 
-## 6. grid_classes.py
-Contains all simulation configuration dataclasses.
-
-### Dataclasses
-
-#### ProfileGridSpec
-Defines soil discretization.
-
-#### RWUSpec
-Defines root water uptake parameters.
-
-#### TimeSpec
-Defines temporal discretization.
-
-#### InitialCondition
-Defines initial pressure head.
-
-#### SolverOptions
-Defines ODE solver parameters.
-
-#### PostProcerssingOutputs
-Stores model outputs.
-
----
-
-# Model Workflow
-
-```text
-Meteorological Data
-        ↓
-Soil Hydraulic Parameters
-        ↓
-Grid Generation
-        ↓
-Initial Conditions
-        ↓
-Richards Equation Solver
-        ↓
-Root Water Uptake
-        ↓
-Boundary Conditions
-        ↓
-ODE Integration
-        ↓
-Post Processing
-        ↓
-Plots and Outputs
+```python
+scipy.integrate.solve_ivp
 ```
+
+Recommended method:
+
+```python
+method="BDF"
+```
+
+#### `RichardsModelOutputs()`
+
+Processes model outputs including:
+
+- Soil moisture
+- Pressure head
+- Storage
+- Actual evapotranspiration
+- Water fluxes
+- Runoff
+
+---
+
+## `UtilitiesFunctions.py`
+
+Contains helper and visualization utilities.
+
+### Functions
+
+| Function | Description |
+|---|---|
+| `assign_vg()` | Assigns VG parameters to soil grid |
+| `GetOutputAtRequiredDepths()` | Interpolates outputs |
+| `plot_variable_at_depths()` | Deterministic plotting |
+| `compute_mc_stats()` | Monte Carlo statistics |
+| `plot_variable_at_depthsMonteCarlo()` | Ensemble visualization |
+
+---
+
+## `REModelMonteCarlo_functions.py`
+
+Implements the Monte Carlo workflow.
+
+### Features
+
+- VG parameter sampling
+- Parallel execution
+- Ensemble statistics
+- Automatic saving of realizations
+- Failure handling
+
+### Main Functions
+
+| Function | Description |
+|---|---|
+| `generate_mc_vg_params()` | Generates VG realizations |
+| `run_one_mc()` | Runs one simulation |
+| `RESolverMonteCarloParallel()` | Parallel ensemble driver |
+
+---
+
+## `MonteCarloResultAnalysis.py`
+
+Post-processing and visualization of ensemble results.
+
+### Outputs
+
+- Depth-wise soil moisture
+- Pressure head uncertainty
+- Water storage statistics
+- Confidence intervals
+- Exported figures
 
 ---
 
 # Numerical Method
 
 ## Spatial Discretization
-The soil profile is discretized using a finite difference grid.
 
-### Grid Representation
-- Cell-centered nodes
-- Uniform spacing
-- Vertical one-dimensional domain
+The soil profile is discretized using:
 
-### Flux Computation
+- One-dimensional vertical grid
+- Cell-centered finite difference formulation
+- Uniform spatial spacing
+
 Fluxes are evaluated at cell boundaries using arithmetic averaging of hydraulic conductivity.
 
 ---
 
 ## Temporal Integration
-The model uses:
+
+Time integration uses:
 
 ```python
 scipy.integrate.solve_ivp
@@ -295,20 +277,21 @@ Recommended solver:
 method='BDF'
 ```
 
-because Richards Equation is stiff.
+because Richards Equation systems are stiff.
 
 ---
 
 # Boundary Conditions
 
 ## Upper Boundary
-The upper boundary condition combines:
+
+The upper boundary combines:
 
 - Rainfall infiltration
 - Ponding limitation
 - Surface runoff generation
 
-### Infiltration Condition
+Infiltration flux:
 
 ```python
 q0 = min(qPond, qP)
@@ -316,22 +299,25 @@ q0 = min(qPond, qP)
 
 where:
 
-- `qPond` = maximum infiltration under ponded conditions
+- `qPond` = ponded infiltration capacity
 - `qP` = rainfall flux
 
 ---
 
-## Lower Boundary
-Supported lower boundary conditions:
+## Lower Boundary Conditions
 
-### Free Drainage
-```python
-bottom_BC='free_drainage'
-```
+Supported options:
 
 ### No Flow
+
 ```python
-bottom_BC='no_flow'
+bottom_BC="no_flow"
+```
+
+### Free Drainage
+
+```python
+bottom_BC="free_drainage"
 ```
 
 ---
@@ -339,12 +325,13 @@ bottom_BC='no_flow'
 # Required Input Data
 
 ## Meteorological Data
-The meteorological input file must contain:
+
+Required columns:
 
 | Column | Units | Description |
 |---|---|---|
-| rain_mm | mm/day | Daily rainfall |
-| pet_mm_per_day | mm/day | Potential evapotranspiration |
+| `rain_mm` | mm/day | Daily rainfall |
+| `pet_mm_per_day` | mm/day | Potential evapotranspiration |
 
 ---
 
@@ -352,22 +339,20 @@ The meteorological input file must contain:
 
 | Parameter | Description |
 |---|---|
-| thetas | Saturated water content |
-| thetar | Residual water content |
-| alpha | VG alpha parameter |
-| N | VG pore-size parameter |
-| Ksat | Saturated hydraulic conductivity |
-| n_eta | Tortuosity/connectivity parameter |
+| `thetas` | Saturated water content |
+| `thetar` | Residual water content |
+| `alpha (m-1)` | VG alpha parameter |
+| `N` | VG pore-size parameter |
+| `Ksat (m/day)` | Saturated hydraulic conductivity |
+| `n_eta` | Tortuosity parameter |
 
 ---
 
 # Example Usage
 
-## Basic Simulation
+## Deterministic Simulation
 
 ```python
-profileData = ProfileGridSpec(zmin=0, zmax=2, dz=0.02)
-
 ProcessedOutputs, sol = RESolver(
     SoilData,
     profileData,
@@ -382,19 +367,43 @@ ProcessedOutputs, sol = RESolver(
 
 ---
 
+## Monte Carlo Simulation
+
+```python
+summary_df, failed_df = RESolverMonteCarloParallel(
+    soil_params=soil_params,
+    profileData=profileData,
+    RWUData=RWUData,
+    timeData=timeData,
+    MetData=MetData,
+    IniData=IniData,
+    solver_opts=solver_opts,
+    Nmc=200,
+    bottom_BC="no_flow",
+    n_workers=5
+)
+```
+
+---
+
 # Output Variables
 
 | Variable | Description |
 |---|---|
-| theta | Soil moisture |
-| h | Pressure head |
-| K | Hydraulic conductivity |
-| Se | Effective saturation |
-| STORAGE | Total water storage |
-| Actual_ET | Actual evapotranspiration |
-| PlantUptake | Root water uptake |
-| ROin | Surface runoff |
-| Q_flux | Water flux |
+| `theta` | Soil moisture |
+| `h` | Pressure head |
+| `K` | Hydraulic conductivity |
+| `Se` | Effective saturation |
+| `STORAGE` | Water storage |
+| `Actual_ET` | Actual evapotranspiration |
+| `PlantUptake` | Root uptake |
+| `ROin` | Surface runoff |
+| `Q_flux` | Water flux |
 
 ---
+
+
+# Citation
+
+If using this repository in academic work, please cite the associated manuscript and acknowledge the repository authors.
 
