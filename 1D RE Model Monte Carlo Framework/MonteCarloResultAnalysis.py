@@ -71,15 +71,7 @@ h_all , _, _ , h_mean_targets, h_std_targets = plot_variable_at_depthsMonteCarlo
 
 
 
-
-obs15 = pd.read_excel('data_johnstown.xlsx',sheet_name='obs_data_15_cm')
-obs30 = pd.read_excel('data_johnstown.xlsx',sheet_name='obs_data_30_cm')
-obs45 = pd.read_excel('data_johnstown.xlsx',sheet_name='obs_data_45_cm')
-obs60 = pd.read_excel('data_johnstown.xlsx',sheet_name='obs_data_60_cm')
-obs90 = pd.read_excel('data_johnstown.xlsx',sheet_name='obs_data_90_cm')
-obs120 = pd.read_excel('data_johnstown.xlsx',sheet_name='obs_data_120_cm')
-
-
+obsData = pd.read_excel('data_johnstown.xlsx',sheet_name='obsDateInterPolated')
 
 
 start_date = pd.to_datetime( MetData['date']).iloc[0]
@@ -129,15 +121,15 @@ plt.rcParams.update({
 
 fig, axes = plt.subplots(6, 1, figsize=(10,10), sharex='col')
 # ---- Observed Pressure head ----
-axes[0].plot(obs15['Date'], obs15['Tension_value_hPa'], label='Diamond and Sills (2001)')
-axes[1].plot(obs30['Date'], obs30['Tension_value_hPa'], label='Diamond and Sills (2001)')
+axes[0].plot(obsData['date'], obsData['Tension_value_hPa_15cm'], label='Diamond and Sills (2001)')
+axes[1].plot(obsData['date'], obsData['Tension_value_hPa_30cm'], label='Diamond and Sills (2001)')
 
-axes[2].plot(obs45['Date'], obs45['Tension_value_hPa'], label='Diamond and Sills (2001)')
-axes[3].plot(obs60['Date'], obs60['Tension_value_hPa'], label='Diamond and Sills (2001)')
+axes[2].plot(obsData['date'], obsData['Tension_value_hPa_45cm'], label='Diamond and Sills (2001)')
+axes[3].plot(obsData['date'], obsData['Tension_value_hPa_60cm'], label='Diamond and Sills (2001)')
 
-axes[4].plot(obs90['Date'], obs90['Tension_value_hPa'], label='Diamond and Sills (2001)')
+axes[4].plot(obsData['date'], obsData['Tension_value_hPa_90cm'], label='Diamond and Sills (2001)')
 
-axes[5].plot(obs120['Date'], obs120['Tension_value_hPa'], label='Diamond and Sills (2001)')
+axes[5].plot(obsData['date'], obsData['Tension_value_hPa_120cm'], label='Diamond and Sills (2001)')
 
 
 # ----  Pressure head ----
@@ -168,8 +160,8 @@ axes[2].legend(ncol=1)
 
 fig.tight_layout()
 
-plt.savefig('Johnstown_dataset.svg', dpi = 300)
-plt.savefig('Johnstown_dataset.png', dpi = 300)
+plt.savefig('Johnstown_MonteCarlo.svg', dpi = 300)
+plt.savefig('Johnstown_MonteCarlo.png', dpi = 300)
 
 plt.show()
 
